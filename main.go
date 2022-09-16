@@ -12,13 +12,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//for i := 0; i < len(hids); i++ {
-	//	for j := i + 1; j < len(hids); j++ {
-	//		if hids[i].Path > hids[j].Path {
-	//			hids[i], hids[j] = hids[j], hids[i]
-	//		}
-	//	}
-	//}
 	for i, hid := range hids {
 		fmt.Println(strings.Repeat("-", 128))
 		fmt.Printf("HID #%d\n", i)
@@ -32,7 +25,6 @@ func main() {
 		fmt.Printf("  Usage Page:   %d\n", hid.UsagePage)
 		fmt.Printf("  Usage:        %d\n", hid.Usage)
 		fmt.Printf("  Interface:    %d\n", hid.Interface)
-		//hid.Open()
 	}
 	if len(hids) == 0 {
 		log.Fatalf("No found device\n")
@@ -43,9 +35,8 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf("Device is opened")
-	//defer device.Close()
+	defer device.Close()
 	log.Printf("Sending data....")
-	//data := []byte{0x21, 0x09, 0x03, 0x00, 0x00}
 	data := []byte{0x00, 0x65,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -88,20 +79,11 @@ func main() {
 		0x7d, 0xb3, 0xe0, 0x7c, 0xe5, 0x4f, 0x00, 0x73, 0xdb, 0x9d, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	}
-	//for i := 0; i < 87; i++ {
-	//	data = append(data, 0x00)
-	//}
 	result, err := device.Write(data)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("Result %d\n", result)
 	log.Printf("Data is sent")
-	log.Printf("Closing device....")
-	err = device.Close()
-	if err != nil {
-		log.Fatalf("Close error %s", err)
-	}
-	log.Printf("Device is closed")
 	fmt.Println(strings.Repeat("=", 128))
 }
