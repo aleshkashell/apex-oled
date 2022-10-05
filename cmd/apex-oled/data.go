@@ -14,20 +14,20 @@ func WriteDataToOled(payload []byte) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for i, hid := range hids {
-		fmt.Println(strings.Repeat("-", 128))
-		fmt.Printf("HID #%d\n", i)
-		fmt.Printf("  OS Path:      %s\n", hid.Path)
-		fmt.Printf("  Vendor ID:    %#04x\n", hid.VendorID)
-		fmt.Printf("  Product ID:   %#04x\n", hid.ProductID)
-		fmt.Printf("  Release:      %d\n", hid.Release)
-		fmt.Printf("  Serial:       %s\n", hid.Serial)
-		fmt.Printf("  Manufacturer: %s\n", hid.Manufacturer)
-		fmt.Printf("  Product:      %s\n", hid.Product)
-		fmt.Printf("  Usage Page:   %d\n", hid.UsagePage)
-		fmt.Printf("  Usage:        %d\n", hid.Usage)
-		fmt.Printf("  Interface:    %d\n", hid.Interface)
-	}
+	//for i, hid := range hids {
+	//	fmt.Println(strings.Repeat("-", 128))
+	//	fmt.Printf("HID #%d\n", i)
+	//	fmt.Printf("  OS Path:      %s\n", hid.Path)
+	//	fmt.Printf("  Vendor ID:    %#04x\n", hid.VendorID)
+	//	fmt.Printf("  Product ID:   %#04x\n", hid.ProductID)
+	//	fmt.Printf("  Release:      %d\n", hid.Release)
+	//	fmt.Printf("  Serial:       %s\n", hid.Serial)
+	//	fmt.Printf("  Manufacturer: %s\n", hid.Manufacturer)
+	//	fmt.Printf("  Product:      %s\n", hid.Product)
+	//	fmt.Printf("  Usage Page:   %d\n", hid.UsagePage)
+	//	fmt.Printf("  Usage:        %d\n", hid.Usage)
+	//	fmt.Printf("  Interface:    %d\n", hid.Interface)
+	//}
 	if len(hids) == 0 {
 		log.Fatalf("No found device\n")
 	}
@@ -64,21 +64,8 @@ func DisplayHexData(payload []byte) {
 }
 
 func DisplayBinaryData(payload []byte) {
-	offset := 0
-	for i := 0; i < offset; i++ {
-		if i%(oled.DisplayWidth/8) == 0 {
-			fmt.Println()
-		}
-		fmt.Printf("%08b", 0x00)
-	}
 	for n, i := range payload {
-		//if n < offset {
-		//	continue
-		//}
-		//if n%2 == 0 {
-		//	fmt.Printf(" ")
-		//}
-		if (n+offset)%(oled.DisplayWidth/8) == 0 {
+		if n%(oled.DisplayWidth/8) == 0 {
 			fmt.Println()
 		}
 		fmt.Printf("%08b", i)

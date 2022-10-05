@@ -3,7 +3,11 @@ package oled
 import (
 	"apex-oled/internal/bitset"
 	"fmt"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/basicfont"
+	"golang.org/x/image/math/fixed"
 	"image"
+	"image/color"
 	"image/png"
 	"io"
 	"log"
@@ -12,13 +16,6 @@ import (
 
 var DisplayWidth = 128
 var DisplayHeight = 40
-var OledPreamble = []byte{0x65}
-
-func pixelsToPayload() {
-	fmt.Println(DisplayWidth)
-	fmt.Println(DisplayHeight)
-
-}
 
 func GetImageBytes() []byte {
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
@@ -33,9 +30,20 @@ func GetImageBytes() []byte {
 	}
 	fmt.Println(pixels)
 	return PixelsToBytes(pixels)
-	//return append(OledPreamble, PixelsToBytes(pixels)...)
 }
 
+func SimpleTextToImage(labels []string) []byte {
+	img := image.NewRGBA(image.Rect(0, 0, DisplayWidth, DisplayHeight))
+	for i, label := range labels {
+		if i == 4 {
+			break
+		}
+		addSimpleTextToImage(img, 0, (i+1)*10, label)
+	}
+	pixels := imageToPixels(img)
+	fmt.Println(pixels)
+	return PixelsToBytes(pixels)
+}
 func GetTestData() []byte {
 	return []byte{
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -81,17 +89,9 @@ func GetTestData() []byte {
 	}
 }
 
-// Get the bi-dimensional pixel array
-func getPixels(file io.Reader) ([][]Pixel, error) {
-	img, _, err := image.Decode(file)
-
-	if err != nil {
-		return nil, err
-	}
-
+func imageToPixels(img image.Image) [][]Pixel {
 	bounds := img.Bounds()
 	width, height := bounds.Max.X, bounds.Max.Y
-
 	fmt.Println(width, height)
 	var pixels [][]Pixel
 	for y := 0; y < height; y++ {
@@ -99,10 +99,19 @@ func getPixels(file io.Reader) ([][]Pixel, error) {
 		for x := 0; x < width; x++ {
 			row = append(row, rgbaToPixel(img.At(x, y).RGBA()))
 		}
-		//pixels = append(pixels, row)
 		pixels = append(pixels, row)
 	}
 
+	return pixels
+}
+
+// Get the bi-dimensional pixel array
+func getPixels(file io.Reader) ([][]Pixel, error) {
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return nil, err
+	}
+	pixels := imageToPixels(img)
 	return pixels, nil
 }
 
@@ -139,6 +148,14 @@ type Pixel struct {
 	A int
 }
 
-func PixelToByte(p Pixel) {
-
+func addSimpleTextToImage(img *image.RGBA, x, y int, label string) {
+	col := color.RGBA{255, 255, 255, 255}
+	point := fixed.Point26_6{fixed.I(x), fixed.I(y)}
+	d := &font.Drawer{
+		Dst:  img,
+		Src:  image.NewUniform(col),
+		Face: basicfont.Face7x13,
+		Dot:  point,
+	}
+	d.DrawString(label)
 }
